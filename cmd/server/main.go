@@ -19,7 +19,7 @@ var UploadDir = "./uploads"
 
 func main() {
 	// Connect to Postgres
-	dsn := "postgres://bnid_user:bnid_pass@localhost:5432/bnid?sslmode=disable"
+	dsn := "postgres://bnid_user:password@localhost:5432/bnid?sslmode=disable"
 	var err error
 	Pool, err = pgxpool.New(context.Background(), dsn)
 	if err != nil {
@@ -38,8 +38,19 @@ func main() {
 		os.Mkdir(UploadDir, 0755)
 	}
 
-	// Gin router
 	r := gin.Default()
+
+	// CORS middleware
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
 
 	// Single file upload
 	r.POST("/upload", handleUpload)
