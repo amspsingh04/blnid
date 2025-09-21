@@ -7,10 +7,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func ConnectDB(connStr string) *pgxpool.Pool {
-	pool, err := pgxpool.New(context.Background(), connStr)
+var Pool *pgxpool.Pool
+
+func Connect(connStr string) {
+	var err error
+	Pool, err = pgxpool.New(context.Background(), connStr)
 	if err != nil {
-		log.Fatal("Unable to connect to database: ", err)
+		log.Fatal("Unable to connect to database:", err)
 	}
-	return pool
+
+	err = Pool.Ping(context.Background())
+	if err != nil {
+		log.Fatal("Cannot ping database:", err)
+	}
+
+	log.Println("Connected to Postgres successfully!")
 }
