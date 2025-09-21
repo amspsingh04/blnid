@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:15
+    container_name: bnid-db
+    restart: always
+    environment:
+      POSTGRES_USER: bnid_user
+      POSTGRES_PASSWORD: bnid_pass
+      POSTGRES_DB: bnid
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer: # optional: a web UI for PostgreSQL
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+
+volumes:
+  postgres_data:
